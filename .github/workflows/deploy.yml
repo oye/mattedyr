@@ -28,7 +28,7 @@ jobs:
       # The app is served from https://<user>.github.io/<repo>/, so build with that base path.
       # For a <user>.github.io repo or a custom domain, use --base=/ instead.
       - run: npm run build -- --base=/${{ github.event.repository.name }}/
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
