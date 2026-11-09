@@ -21,6 +21,14 @@ npm run preview    # forhåndsvis bygget
 
 `node scripts/make-icons.mjs` lager appikonene i `public/` på nytt.
 
+## Publisering (GitHub Pages)
+
+`.github/workflows/deploy.yml` kjører testene, bygger og publiserer appen til
+`https://<brukernavn>.github.io/<repo>/` ved hver push til `main`.
+Første gang: på GitHub, gå til **Settings → Pages** og velg **Source: GitHub Actions**.
+
+Bruker du et `<brukernavn>.github.io`-repo eller eget domene, endre `--base` i workflowen til `/`.
+
 ## Struktur
 
 - `src/engine/` – ren TypeScript uten UI: oppgavegeneratorer (`generators/`), kortbygging og retting (`build.ts`),
