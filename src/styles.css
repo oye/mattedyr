@@ -450,17 +450,24 @@ button.chip:active {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center;
   gap: 8px;
+  overflow-y: auto;
 }
 
 .format-truefalse .question-body {
   flex: none;
 }
 
+.has-figure.question {
+  gap: 8px;
+}
+
 .has-figure .prompt {
-  font-size: clamp(17px, 4.8vw, 22px);
-  padding: 2px 4px;
+  font-size: clamp(15px, 4.2vw, 20px);
+  line-height: 1.25;
+  padding: 0 2px;
+  flex-shrink: 0;
 }
 
 .format-truefalse .prompt {
@@ -471,19 +478,24 @@ button.chip:active {
 /* Figures */
 .figure {
   display: block;
-  width: 100%;
-  max-height: clamp(110px, 24vh, 190px);
+  width: auto;
+  max-width: 100%;
+  flex: 1 1 0;
+  min-height: 64px;
+  max-height: clamp(96px, 22vh, 185px);
   margin: 0 auto;
   overflow: visible;
   font-family: inherit;
 }
 
 .figure-graph {
-  max-height: clamp(140px, 28vh, 220px);
+  max-height: clamp(110px, 25vh, 210px);
 }
 
 .format-truefalse .figure {
-  max-height: clamp(90px, 18vh, 150px);
+  flex: none;
+  height: clamp(76px, 15vh, 130px);
+  max-height: none;
 }
 
 .fig-line {
@@ -659,6 +671,42 @@ button.chip:active {
 
 .key-alt {
   background: rgba(139, 108, 255, 0.25);
+}
+
+/* Compact controls when the card also shows a figure */
+.has-figure .numpad {
+  gap: 6px;
+}
+
+.has-figure .numpad-display {
+  min-height: 46px;
+  padding: 4px 48px;
+  font-size: 26px;
+}
+
+.has-figure .numpad-grid {
+  gap: 6px;
+}
+
+.has-figure .key {
+  height: clamp(36px, 5.5vh, 48px);
+  font-size: 20px;
+  border-radius: 13px;
+}
+
+.has-figure .numpad .btn {
+  padding: 11px 16px;
+}
+
+.has-figure .choice {
+  min-height: 56px;
+  padding: 8px;
+  font-size: 19px;
+}
+
+.has-figure .tf-card {
+  min-height: 100px;
+  padding: 14px 12px;
 }
 
 /* Multiple choice */
