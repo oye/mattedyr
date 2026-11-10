@@ -7,7 +7,7 @@ export function Hud({ onOpenPet }: { onOpenPet?: () => void }) {
   const coins = useStore((s) => s.coins);
   const profile = useStore((s) => s.profile);
   const equipped = useStore((s) => s.equipped);
-  const { log, dailyGoal, goalProgress, streak, mood, pet } = useStatus();
+  const { log, dailyGoal, goalProgress, streak, mood, pet, hasNewShopItem } = useStatus();
   if (!profile) return null;
 
   const r = 25;
@@ -44,12 +44,23 @@ export function Hud({ onOpenPet }: { onOpenPet?: () => void }) {
           </span>
         </div>
       </button>
-      <div className={`chip ${streak.todayDone ? "chip-hot" : ""}`} title="Dager på rad">
+      <button
+        className={`chip ${streak.todayDone ? "chip-hot" : ""}`}
+        onClick={onOpenPet}
+        title="Dager på rad"
+        aria-label={`${streak.streak} dager på rad – gå til ${profile.petName}`}
+      >
         🔥 {streak.streak}
-      </div>
-      <div className="chip" title="Mynter">
+      </button>
+      <button
+        className={`chip ${hasNewShopItem ? "chip-notify" : ""}`}
+        onClick={onOpenPet}
+        title={hasNewShopItem ? "Du har råd til noe nytt i butikken!" : "Mynter – åpne butikken"}
+        aria-label={`${coins} mynter – gå til butikken`}
+      >
         🪙 {coins}
-      </div>
+        {hasNewShopItem && <span className="badge-dot" aria-hidden="true" />}
+      </button>
     </header>
   );
 }

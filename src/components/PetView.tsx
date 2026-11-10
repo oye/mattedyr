@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { addDays, MOOD_TEXT, PET_STAGES, parseDayKey } from "../engine/rewards";
 import { useStatus } from "../hooks";
 import { ITEMS } from "../shop";
@@ -17,11 +17,16 @@ export function PetView() {
   const days = useStore((s) => s.days);
   const buy = useStore((s) => s.buy);
   const equip = useStore((s) => s.equip);
+  const seeShop = useStore((s) => s.seeShop);
   const sound = useStore((s) => s.sound);
   const { today, mood, pet, streak } = useStatus();
   const [hearts, setHearts] = useState<number[]>([]);
   const [bounce, setBounce] = useState(0);
   const [bouncing, setBouncing] = useState(false);
+
+  useEffect(() => {
+    if (pet.stage.key !== "egg") seeShop();
+  }, [coins, pet.stage.key, seeShop]);
 
   const pat = () => {
     play("tap", sound);
@@ -109,7 +114,13 @@ export function PetView() {
             const worn = equipped[item.slot] === item.key;
             return (
               <div key={item.key} className={`shop-item ${worn ? "worn" : ""}`}>
-                <Pet stage="voksen" mood="fornoyd" color={profile.petColor} equipped={{ [item.slot]: item.key }} size={64} />
+                <Pet
+                  stage={pet.stage.key === "egg" ? "baby" : pet.stage.key}
+                  mood="fornoyd"
+                  color={profile.petColor}
+                  equipped={{ [item.slot]: item.key }}
+                  size={64}
+                />
                 <span className="shop-name">{item.name}</span>
                 {has ? (
                   <button className="btn btn-small" onClick={() => equip(item.key)}>

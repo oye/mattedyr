@@ -4,6 +4,7 @@ import { Onboarding } from "./components/Onboarding";
 import { PetView } from "./components/PetView";
 import { ProgressView } from "./components/ProgressView";
 import { SettingsView } from "./components/SettingsView";
+import { useStatus } from "./hooks";
 import { useStore } from "./store";
 
 type Tab = "feed" | "pet" | "progress" | "settings";
@@ -24,6 +25,7 @@ export function App() {
 
 function Main() {
   const grade = useStore((s) => s.profile?.grade);
+  const { hasNewShopItem } = useStatus();
   const [tab, setTab] = useState<Tab>("feed");
 
   return (
@@ -37,7 +39,10 @@ function Main() {
       <nav className="tabs">
         {TABS.map((t) => (
           <button key={t.key} className={tab === t.key ? "on" : ""} onClick={() => setTab(t.key)}>
-            <span className="tab-icon">{t.icon}</span>
+            <span className="tab-icon">
+              {t.icon}
+              {t.key === "pet" && hasNewShopItem && <span className="badge-dot" aria-hidden="true" />}
+            </span>
             <span className="tab-label">{t.label}</span>
           </button>
         ))}

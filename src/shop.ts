@@ -11,10 +11,10 @@ export interface Item {
 
 export const ITEMS: Item[] = [
   { key: "sloyfe", name: "Sløyfe", slot: "neck", price: 15 },
-  { key: "skjerf", name: "Skjerf", slot: "neck", price: 30 },
   { key: "briller", name: "Briller", slot: "face", price: 25 },
-  { key: "solbriller", name: "Solbriller", slot: "face", price: 45 },
+  { key: "skjerf", name: "Skjerf", slot: "neck", price: 30 },
   { key: "lue", name: "Lue", slot: "head", price: 35 },
+  { key: "solbriller", name: "Solbriller", slot: "face", price: 45 },
   { key: "caps", name: "Caps", slot: "head", price: 50 },
   { key: "tryllehatt", name: "Tryllehatt", slot: "head", price: 80 },
   { key: "krone", name: "Krone", slot: "head", price: 150 },

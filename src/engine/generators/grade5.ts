@@ -132,20 +132,36 @@ const h = (hundredths: number) => fmt(hundredths / 100);
 export function desimaltall(level: number, rng: Rng): Core {
   switch (level) {
     case 1: {
-      // Which is largest? Targets the "0,45 > 0,5" misconception.
+      // Which is largest? Targets the "0,45 > 0,5" misconception, but varies whether the
+      // largest number has one or two decimals so "pick the 1-decimal number" is not a shortcut.
       const i = randInt(rng, 0, 3);
-      const t = randInt(rng, 2, 9);
-      const biggest = i * 100 + t * 10;
-      const pool = new Set<number>([i * 100 + t, i * 100 + (t - 1) * 10]);
-      for (let k = 1; k <= 9; k++) pool.add(i * 100 + (t - 1) * 10 + k);
-      const misconception = i * 100 + (t - 1) * 10 + randInt(rng, 1, 9); // e.g. 0,45 vs 0,5
-      const rest = shuffle(rng, [...pool].filter((x) => x !== misconception)).slice(0, 2);
+      const t = randInt(rng, 2, 8);
+      if (chance(rng, 0.5)) {
+        // 1-decimal winner (e.g. 0,5 vs 0,48, 0,4, 0,05)
+        const biggest = i * 100 + t * 10;
+        const misconception = i * 100 + (t - 1) * 10 + randInt(rng, 5, 9);
+        const oneDecDistractor = i * 100 + (t - 1) * 10;
+        const hundredthDistractor = i * 100 + t;
+        return {
+          prompt: "Hvilket tall er størst?",
+          answer: h(biggest),
+          distractors: [h(misconception), h(oneDecDistractor), h(hundredthDistractor)],
+          formats: ["choice"],
+          explanation: `${h(biggest)} er det samme som ${(biggest / 100).toFixed(2).replace(".", ",")}. Sammenlign tidelene først: ${t} tideler er mer enn ${t - 1} tideler, uansett hvor mange hundredeler som kommer etter.`,
+        };
+      }
+      // 2-decimal winner (e.g. 0,54 vs 0,5, 0,49, 0,6? No: 0,54 vs 0,5, 0,49, 0,4)
+      const hun = randInt(rng, 2, 9);
+      const biggest = i * 100 + t * 10 + hun;
+      const sameTenth = i * 100 + t * 10; // 1 decimal, same tenth (e.g. 0,5 vs 0,54)
+      const lowerTenthTwoDec = i * 100 + (t - 1) * 10 + randInt(rng, 6, 9); // 2 decimals, lower tenth (e.g. 0,49)
+      const lowerTenthOneDec = i * 100 + (t - 1) * 10; // 1 decimal, lower tenth (e.g. 0,4)
       return {
         prompt: "Hvilket tall er størst?",
         answer: h(biggest),
-        distractors: [h(misconception), ...rest.map(h)],
+        distractors: [h(sameTenth), h(lowerTenthTwoDec), h(lowerTenthOneDec)],
         formats: ["choice"],
-        explanation: `${h(biggest)} er det samme som ${(biggest / 100).toFixed(2).replace(".", ",")}. Sammenlign tidelene først: ${t} tideler er mer enn ${t - 1} tideler, uansett hvor mange hundredeler som kommer etter.`,
+        explanation: `Sammenlign tidelene først, og så hundredelene: ${h(sameTenth)} er ${(sameTenth / 100).toFixed(2).replace(".", ",")}, så ${h(biggest)} er størst.`,
       };
     }
     case 2: {

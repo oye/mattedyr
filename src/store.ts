@@ -14,7 +14,7 @@ import {
   type DayLog,
 } from "./engine/rewards";
 import type { Grade, InfoCard, Question } from "./engine/types";
-import { ITEMS_BY_KEY, type ItemSlot } from "./shop";
+import { ITEMS, ITEMS_BY_KEY, type ItemSlot } from "./shop";
 
 export type PetColor = "lilla" | "gronn" | "bla" | "oransje" | "rosa";
 
@@ -47,6 +47,8 @@ interface State {
   /** Skills chosen by a parent/teacher. Empty = all skills for the grade. */
   enabledSkills: string[];
   owned: string[];
+  /** Unowned shop items the user has already seen while having enough coins to buy them. */
+  seenShopItems: string[];
   equipped: Partial<Record<ItemSlot, string>>;
   sound: boolean;
 
@@ -54,6 +56,7 @@ interface State {
   draw: () => CardPick;
   answer: (q: Question, correct: boolean, responseMs: number) => AnswerResult;
   seeInfo: (card: InfoCard) => void;
+  seeShop: () => void;
   setGrade: (grade: Grade) => void;
   setPet: (patch: Partial<Pick<Profile, "petName" | "petColor">>) => void;
   setDailyGoal: (goal: number) => void;
@@ -76,6 +79,7 @@ const initial = {
   dailyGoal: DEFAULT_DAILY_GOAL,
   enabledSkills: [],
   owned: [],
+  seenShopItems: [],
   equipped: {},
   sound: true,
 } satisfies Partial<State>;
@@ -142,6 +146,14 @@ export const useStore = create<State>()(
       seeInfo: (card) =>
         set((s) => ({ cardsSinceInfo: 0, seenFacts: [...s.seenFacts.filter((t) => t !== card.title), card.title].slice(-50) })),
 
+      seeShop: () =>
+        set((s) => {
+          const affordable = ITEMS.filter((i) => !s.owned.includes(i.key) && s.coins >= i.price).map((i) => i.key);
+          const prev = s.seenShopItems ?? [];
+          if (affordable.length === prev.length && affordable.every((k, i) => k === prev[i])) return {};
+          return { seenShopItems: affordable };
+        }),
+
       setGrade: (grade) => set((s) => (s.profile ? { profile: { ...s.profile, grade }, enabledSkills: [] } : {})),
 
       setPet: (patch) => set((s) => (s.profile ? { profile: { ...s.profile, ...patch } } : {})),
@@ -160,7 +172,10 @@ export const useStore = create<State>()(
         const item = ITEMS_BY_KEY[key];
         const s = get();
         if (!item || s.owned.includes(key) || s.coins < item.price) return false;
-        set({ coins: s.coins - item.price, owned: [...s.owned, key], equipped: { ...s.equipped, [item.slot]: key } });
+        const coins = s.coins - item.price;
+        const owned = [...s.owned, key];
+        const seenShopItems = ITEMS.filter((i) => !owned.includes(i.key) && coins >= i.price).map((i) => i.key);
+        set({ coins, owned, seenShopItems, equipped: { ...s.equipped, [item.slot]: key } });
         return true;
       },
 
